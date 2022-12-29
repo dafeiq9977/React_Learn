@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React生命周期(新)</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_18.2.0_latest.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_18.2.0_latest.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+
+        // React18的新API：先指定根元素，再渲染虚拟DOM
+        const root = ReactDOM.createRoot(document.getElementById('test')) 
+
+        // 新版本的React也能用老版本的钩子
+        // 所有will的生命周期钩子都要加UNSAFE_前缀
+        // React致力于实现异步渲染，到那时这几个钩子容易出现bug，添加UNSAFE提示开发者
+
+        /*
+            React18废弃了三个钩子，三个will钩子
+            新增了两个钩子：getDerivedStateFromProps getSnapshotBeforeUpdate
+        */
+        class Count extends React.Component {
+
+            constructor(props){
+                console.log('Count-Constructor')
+                super(props)
+            }
+
+            state = {
+                count: 0,
+            }
+
+            render(){
+                console.log('Count-render')
+                const {count} = this.state
+                return (
+                    <div>
+                        <h2>当前求和为：{count}</h2>
+                        <button onClick={this.add}>点我+1</button>
+                        <button onClick={this.death}>点我卸载组件</button>
+                        <button onClick={this.force}>不更改组件状态更新组件</button>
+                    </div>
+                )
+            }
+
+            add = ()=>{
+                let {count} = this.state
+                count++
+                this.setState({count})
+            }
+
+            death = ()=>{
+                root.unmount()
+            }
+
+            force = ()=>{
+                this.forceUpdate()
+            }
+            // React18这个钩子要加UNSAFE
+            UNSAFE_componentWillMount(){
+                console.log('Count-componentWillMount')
+            }
+
+            componentDidMount(){
+                console.log('Count-componentDidMount')
+            }
+
+            componentWillUnmount(){
+                console.log('Count-componentWillUnMount')
+            }
+
+            // setState被调用后，会调用这个函数，问一下是否应该更新组件
+            // 返回true更新     返回false不更新
+            // 不写这个钩子函数，默认时更新的
+            shouldComponentUpdate() {
+                console.log('Count-shouldComponentUpdate')
+                return true
+            }
+            // 组件视图更新前调用这个函数
+            // React18这个钩子要加UNSAFE
+            UNSAFE_componentWillUpdate() {
+                console.log('Count-componentWillUpdate')
+            }
+            // 组件视图更新完以后调用
+            componentDidUpdate() {
+                console.log('Count-componentDidUpdate')
+            }
+        }
+
+        class A extends React.Component {
+
+            state = {
+                carName: '宝马'
+            }
+
+            render() {
+                return (
+                    <div>
+                        我是A组件<br />
+                        <button onClick={this.changeCar}>点我换车</button>
+                        <B carName={this.state.carName}/>
+                    </div>
+                )
+            }
+
+            changeCar = ()=>{
+                // const {carName} = this.state
+                this.setState({carName: '奔驰'})
+            }
+            }
+
+        class B extends React.Component {
+            render() {
+                return (
+                    <div>我是B组件，我接收到的车是：{this.props.carName}</div>
+                )
+            }
+            // React18这个钩子要加UNSAFE
+            UNSAFE_componentWillReceiveProps(props){
+                console.log('B-componentWillReceiveProps', props)
+            }
+
+            shouldComponentUpdate() {
+                console.log('B-shouldComponentUpdate')
+                return true
+            }
+            // React18这个钩子要加UNSAFE
+            UNSAFE_componentWillUpdate() {
+                console.log('B-componentWillUpdate')
+            }
+
+            componentDidUpdate() {
+                console.log('B-componentDidUpdate')
+            }
+        }
+        //ReactDOM.render(<Count/>, document.getElementById('test'))
+        //ReactDOM.render(<A/>, document.getElementById('test'))
+        //const root = ReactDOM.createRoot(document.getElementById('test'))
+        root.render(<Count/>)
+    </script>
+</body>
+</html>

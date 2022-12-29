@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React核心属性2————props</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 创建组件class
+        class Person extends React.Component{
+
+            render() {
+                return (
+                    <ul>
+                        <li>姓名：{this.props.name}</li>
+                        <li>性别：{this.props.sex}</li>
+                        <li>年龄：{this.props.age}</li>
+                    </ul>
+                )
+            }
+
+        }
+        
+        // 2. 渲染虚拟DOM到页面
+        // 创建一个叫Andy的人和一个叫Qpr的人
+        const p = {name: 'Andy', sex: '女', age: '20'}
+        ReactDOM.render(
+            (
+                // <div>
+                //     <Person name="Andy" age="18" sex="女"/>
+                //     <Person name="Qpr" age="20" sex="男"/>
+                // </div>
+                
+                // babel + React核心库可以触发对象展开（只能在标签属性里）
+                // 批量传递标签属性
+                <div>
+                    <Person {...p}/>
+                </div>
+            ), 
+            document.getElementById('test')
+        )
+    </script>
+</body>
+</html>

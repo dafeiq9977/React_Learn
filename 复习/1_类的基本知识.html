@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1_类的基本知识</title>
+</head>
+<body>
+    <script type="text/javascript">
+        // 创建一个Person类
+        class Person {
+            constructor(name, age){
+                // this指向类的实例对象
+                this.name = name;
+                this.age = age;
+            }
+            // 一般方法 不可枚举
+            speak(){
+                console.log(`我叫${this.name}，我年龄是${this.age}`)
+            }
+
+            // Car的静态属性
+            static demo = 100;
+        }
+        const p1 = new Person('Tom', 18);
+        console.log(p1);
+        p1.speak();
+        p1.speak.call({a:1, b:2});
+        // Person() 必须用new调用
+
+        // 创建Student类，继承Person
+        class Student extends Person{
+            constructor(name, age, year){
+                // super必须放最开始，因为ES6继承是先构造父类对象
+                super(name, age)
+                this.grade = year;
+            }
+            speak(){
+                // super可以调用
+                super.speak();
+                console.log(`我今年上${this.grade}`)
+            }
+        }
+
+        const s1 = new Student('小张', 15, '高一')
+        console.log(s1)
+        s1.speak();
+    </script>
+</body>
+</html>

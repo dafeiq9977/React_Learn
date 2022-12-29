@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>受控组件</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 创建组件
+        // 这是一个受控组件
+        // 受控组件：随着用户的输入，内容被维护到组建的state里，用的时候从state里取
+        // 受控组件可以少写ref
+        class Login extends React.Component{
+
+            state = {
+                username: '', // 用户名
+                password: '', // 密码
+            }
+
+            render(){
+                return (
+                    // 默认是get请求
+                    <form action="http://www.atguigu.com" onSubmit={this.handleSubmit}>
+                        用户名：<input onChange={this.saveUsername} type="text" name="username"/>
+                        密码：<input onChange={this.savePassword} type="password" name="password"/>
+                        <input type="submit" />
+                    </form>
+                )
+            }
+
+            handleSubmit = (event)=>{
+                // const {username, password} = this;
+                // alert(`你输入的用户名是${username.value}, 你输入的密码是${password.value}`)
+                // 阻止表单提交的默认行为
+                event.preventDefault();
+                const {username, password} = this;
+                alert(`你输入的用户名是${username}, 你输入的密码是${password}`)
+                // 受控组件
+
+            }
+            // 保存用户名到状态中
+            saveUsername = (event)=>{
+                console.log('@', event.target.value)
+                this.setState({username: event.target.value})
+            }
+            // 保存密码到状态中
+            savePassword = (event)=>{
+                console.log('@', event.target.value)
+                this.setState({password: event.target.value})
+            }
+        }
+        // 渲染组件
+        ReactDOM.render(<Login />, document.getElementById('test'))
+    </script>
+</body>
+</html>

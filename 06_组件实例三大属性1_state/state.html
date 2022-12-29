@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件三大核心属性1——state</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 1.创建一个复杂组件（有状态的组件就是复杂组件）
+        class Weather extends React.Component {
+            // 构造器只调用一次
+            constructor(props){
+                super(props)
+                this.state = {
+                    isHot: false,
+                    wind: '微风',
+                }
+                // 解决changeWeather中this只想问题
+                this.changeWeather = this.changeWeather.bind(this);
+            } // 这里不写逗号
+
+            /*
+                1. onClick注意大写
+                2. 监听器必须是一个函数名
+                3. render函数调用————1+n次，n是页面更新的次数
+            */
+            render() {
+                console.log(this)
+                const {isHot} = this.state;
+                return (
+                    <h1 onClick={this.changeWeather}>今天天气很{isHot ? '炎热': '凉爽'}</h1>
+                )
+            }
+
+            changeWeather(){
+                // 这个方法绑定到了onClick上，this不再是组件实例对象
+                console.log('标题被点击了')
+                console.log('此处修改isHot的值')
+
+                // const {isHot} = this.state;
+                // console.log(isHot)
+
+                // 严重注意：状态里属性不能直接修改，React不认可
+
+                /*this.state.isHot = !this.state.isHot
+                console.log(this.state.isHot)*/
+
+                // 借助内部API更改 setState
+                const isHot = this.state.isHot;
+                // 状态必须通过setState更新
+                // setState更新的动作是合并，不是直接替换
+                this.setState({isHot: !isHot})
+            }
+        }
+
+        // function demo(){
+        //     console.log('标题被点击了')
+        //     console.log('此处修改isHot的值')
+
+        //     const {isHot} = this.state;
+        //     console.log(isHot)
+        // }
+
+        // 渲染组件到页面
+        ReactDOM.render(<Weather />, document.getElementById('test'))
+
+        const title = document.getElementById('title');
+
+        // title.onclick = ()=>{
+        //     console.log('标题被点击了2')
+        // }
+
+        // title.addEventListener('click', ()=>{
+        //     console.log('标题被点击了')
+        // }/*第三个参数默认false，冒泡阶段被处理*/)
+    </script>
+</body>
+</html>

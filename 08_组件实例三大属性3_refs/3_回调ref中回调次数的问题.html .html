@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回调ref中回调次数的问题.html </title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 创建组件
+        class Demo extends React.Component{
+            state = {
+                isHot: false,
+            }
+
+            render(){
+                console.log(this)
+                const {isHot} = this.state
+                return (
+                // ref的回调函数是内联函数，组件更新的时候回调执行两次
+                // React因为不知道ref的回调函数做了什么
+                // 所以更新的时候先调用一遍参数是null的回调
+                // 再把当前DOM元素作为参数执行第二遍
+                    <div>
+                        {/*<input 
+                            ref={
+                                (cur)=>{
+                                    this.input1 = cur 
+                                    console.log('@', cur)
+                                }
+                            } 
+                            type="text" 
+                        />*/}
+                        {/* 固定函数设置虚拟DOM元素的ref */}
+                        <input ref={this.saveInput} type="text" />
+                        <button onClick={this.showData}>点我输出输入的数据</button>
+                        <h2 onClick={this.changeWeather}>
+                            今天天气很{isHot ? '炎热' : '凉爽'}
+                        </h2>
+                    </div>
+                )
+            }
+
+            saveInput = (c)=>{
+                this.input1 = c;
+                console.log('@', c);
+            }
+
+            changeWeather = ()=>{
+                const {isHot} = this.state
+                this.setState({isHot: !isHot})
+            }
+
+            showData = ()=>{
+                const {input1} = this;
+                alert(input1.value)
+            }
+        }
+
+        // 渲染虚拟DOM
+        ReactDOM.render(
+            <Demo />,
+            document.getElementById('test')
+        )
+    </script>
+</body>
+</html>

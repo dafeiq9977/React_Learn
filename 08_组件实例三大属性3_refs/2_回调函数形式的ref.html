@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回调函数形式的ref</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 创建组件
+        class Demo extends React.Component{
+            render(){
+                // 使用字符串形式的ref
+                return (
+                    // 标签ref属性是一个回调函数
+                    // 函数参数是当前这个节点
+                    // 一般把这个节点挂到当前组件实例上
+                    <div>
+                        <input 
+                            ref={ node => this.input1 = node } 
+                            type="text" 
+                        />&nbsp;
+                        <button onClick={this.showData}>点我提示左侧的数据</button>&nbsp;
+                        <input 
+                            onBlur={this.showData2} 
+                            type="text" 
+                            placeholder="失去焦点提示数据" 
+                            ref={ node => this.input2 = node }
+                        />
+                    </div>
+                )
+            }
+            // 展示左侧输入框的数据
+            showData = ()=>{
+                console.log(this.input1)
+                alert(this.input1.value)
+            }
+            // 右侧输入框失去焦点alert输入框的内容
+            showData2 = ()=>{
+                const {input2} = this;
+                console.log(input2)
+                alert(input2.value)
+            }
+        }
+
+        // 渲染虚拟DOM
+        ReactDOM.render(
+            <Demo />,
+            document.getElementById('test')
+        )
+    </script>
+</body>
+</html>

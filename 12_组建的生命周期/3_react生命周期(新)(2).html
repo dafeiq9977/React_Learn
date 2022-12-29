@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React生命周期(新)</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_18.2.0_latest.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_18.2.0_latest.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+
+        // React18的新API：先指定根元素，再渲染虚拟DOM
+        const root = ReactDOM.createRoot(document.getElementById('test'))
+
+        /*
+            React18废弃了三个钩子，三个will钩子
+            新增了两个钩子：getDerivedStateFromProps getSnapshotBeforeUpdate
+        */
+        class Count extends React.Component {
+
+            constructor(props){
+                console.log('Count-Constructor')
+                super(props)
+            }
+
+            state = {
+                count: 0,
+            }
+
+            render(){
+                console.log('Count-render')
+                const {count} = this.state
+                return (
+                    <div>
+                        <h2>收到的参数是：{this.props.count}</h2>
+                        <h2>当前求和为：{count}</h2>
+                        <button onClick={this.add}>点我+1</button>
+                        <button onClick={this.death}>点我卸载组件</button>
+                        <button onClick={this.force}>不更改组件状态更新组件</button>
+                    </div>
+                )
+            }
+
+            add = ()=>{
+                let {count} = this.state
+                count++
+                this.setState({count})
+            }
+
+            death = ()=>{
+                root.unmount()
+            }
+
+            force = ()=>{
+                this.forceUpdate()
+            }
+
+            // 这个钩子必须是组件类的静态方法
+            // 这个钩子必须返回一个对象或者null，返回值作为组件的state
+            // 这个钩子函数适用于组件 的状态仅仅取决于组件收到的参数
+            static getDerivedStateFromProps(props, state){
+                // state是初始化组件指定的状态对象
+                // props是组件使用者传进来的参数对象
+                console.log('getDerivedStateFromProps', props, state)
+                // return null
+                // 从此以后如果props不变，组件的state就不变了
+                // 即组件的state永远取决于props
+                return props
+
+            }
+
+            componentDidMount(){
+                console.log('Count-componentDidMount')
+            }
+
+            componentWillUnmount(){
+                console.log('Count-componentWillUnMount')
+            }
+
+            // setState被调用后，会调用这个函数，问一下是否应该更新组件
+            // 返回true更新     返回false不更新
+            // 不写这个钩子函数，默认时更新的
+            shouldComponentUpdate(nextProps, nextState) {
+                // nextProps：组件更新时新拿到的props
+                // nextState：组件更新时新的state
+                console.log('Count-shouldComponentUpdate')
+                return true
+            }
+
+            // 组件更新之前获取更新前组件的快照
+            getSnapshotBeforeUpdate() {
+                console.log('getSnapshotBeforeUpdate')
+                return null
+            }
+
+            // 组件视图更新完以后调用
+            // 收到两个参数：第一个是组件上一次收到的参数，第二个是组件上一次的状态值
+            // 第三个参数是getSnapshotBeforeUpdate的返回值
+            componentDidUpdate(preProps, preState, snapshotVal) {
+                console.log('Count-componentDidUpdate', preProps, preState, snapshotVal)
+            }
+        }
+
+        class A extends React.Component {
+
+            state = {
+                carName: '宝马'
+            }
+
+            render() {
+                return (
+                    <div>
+                        我是A组件<br />
+                        <button onClick={this.changeCar}>点我换车</button>
+                        <B carName={this.state.carName}/>
+                    </div>
+                )
+            }
+
+            changeCar = ()=>{
+                // const {carName} = this.state
+                this.setState({carName: '奔驰'})
+            }
+            }
+
+        class B extends React.Component {
+            render() {
+                return (
+                    <div>我是B组件，我接收到的车是：{this.props.carName}</div>
+                )
+            }
+
+            shouldComponentUpdate() {
+                console.log('B-shouldComponentUpdate')
+                return true
+            }
+
+            componentDidUpdate() {
+                console.log('B-componentDidUpdate')
+            }
+        }
+        //ReactDOM.render(<Count/>, document.getElementById('test'))
+        //ReactDOM.render(<A/>, document.getElementById('test'))
+        //const root = ReactDOM.createRoot(document.getElementById('test'))
+        root.render(<Count count={199}/>)
+    </script>
+</body>
+</html>

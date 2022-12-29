@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React事件处理</title>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_16.8.6.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_16.8.6.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+        // 创建组件
+        class Demo extends React.Component{
+            /*
+                （1） 通过onXxx属性指定事件处理函数（注意大小写）
+                    a. React使用自定义（合成）事件，而不是原生的DOM事件——为了更好的兼容性
+                    b. React中的事件是通过事件委托方式处理的（委托给组件最外层元素）——为了高效
+                （2） 通过event.target得到事件发生的DOM元素——不要过度使用Ref
+            */
+            // 创建Ref容器
+            myRef = React.createRef();
+
+            state = {
+                isHot: false,
+            }
+
+            render(){
+                console.log(this)
+                const {isHot} = this.state
+                return (
+                    <div>
+                        <input ref={this.myRef} type="text" />&nbsp;
+                        {/* 这些事件都委托给了最外层div元素 */}
+                        <button onClick={this.showData}>点我输出输入的数据</button>&nbsp;
+                        <input onBlur={this.showData2} type="text" />
+                        <h2 onClick={this.changeWeather}>
+                            今天天气很{isHot ? '炎热' : '凉爽'}
+                        </h2>
+                    </div>
+                )
+            }
+
+            saveInput = (c)=>{
+                this.input1 = c;
+                console.log('@', c);
+            }
+            // changeWeather一定要定义成箭头函数
+            // 这个函数是事件回调函数，事件回调的this是window（严格模式下this是undefined）
+            changeWeather = ()=>{
+                const {isHot} = this.state
+                // 每一次修改状态，都会调用render函数
+                this.setState({isHot: !isHot})
+            }
+
+            showData = ()=>{
+                console.log(this.myRef)
+                alert(this.myRef.current.value)
+            }
+
+            showData2 = (event)=>{
+                alert(event.target.value)
+            }
+        }
+
+        // 渲染虚拟DOM
+        ReactDOM.render(
+            <Demo />,
+            document.getElementById('test')
+        )
+    </script>
+</body>
+</html>

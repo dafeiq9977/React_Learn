@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- lang设置网页的语言 -->
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>getSnapshotBeforeUpdate</title>
+    <style>
+        .list {
+            width: 200px;
+            height: 150px;
+            background-color: pink;
+            overflow: auto;
+        }
+        .news {
+            font-size: 15px;
+            line-height: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 准备好一个容器 -->
+    <div id="test"></div>
+    <!-- 引入react核心库（必须先引入核心库） -->
+    <script type="text/javascript" src="../js/react.development_18.2.0_latest.js"></script>
+    <!-- 引入react-dom 用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development_18.2.0_latest.js"></script>
+    <!-- 引入Babel，用于将jsx转为js -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <!-- 引入prop-types.js，用于对组件props的JS类型限制 -->
+    <script type="text/javascript" src="../js/prop-types_15.7.2_latest.js"></script>
+
+    <script type="text/babel"> /* 此处一定要写Babel */
+        
+        const root = ReactDOM.createRoot(document.getElementById('test'))
+
+        class News extends React.Component {
+
+            state = {
+                news: []
+            }
+
+
+            render(){
+                const {news} = this.state
+                return (
+                    <div className="list" ref="list">
+                        {
+                            news.map((item, idx)=>{
+                                return (
+                                    <div key={idx} className="news">
+                                        {item}
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                )
+            }
+
+            componentDidMount(){
+                setInterval(()=>{
+                    const {news} = this.state
+                    const first = '新闻' + (news.length + 1)
+                    this.setState({news: [first, ...news]})
+                }, 1000)
+            }
+
+            getSnapshotBeforeUpdate(){
+                // 返回一些组件更新前的节点信息，componentDidUpdate会收到
+                return this.refs.list.scrollHeight
+            }
+
+            componentDidUpdate(preProps, preState, height){
+                this.refs.list.scrollTop += this.refs.list.scrollHeight - height
+            }
+        }
+
+        root.render(<News/>)
+    </script>
+</body>
+</html>
